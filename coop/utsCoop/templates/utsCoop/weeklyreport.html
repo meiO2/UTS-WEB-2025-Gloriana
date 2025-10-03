@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Report</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'HPadmin.css' %}" /> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    
+    <style>
+        .offcanvas-body {
+            height: 100%; 
+        }
+        body {
+            padding-top: 70px;
+            background-color: #f8f9fa;
+        }
+        .navbar-toggler:focus {
+            box-shadow: none !important;
+        }
+        .form-container {
+            width: 100%;
+        }
+        .content-wrapper {
+            max-width: 880px; 
+            margin: auto;
+        }
+        .arrow-wrapper {
+            padding-top: 0; 
+            margin-right: -25px; 
+            display: flex;
+            align-items: center; 
+        }
+        .form-container .p-4, .form-container .p-md-5 {
+            padding-top: 20px !important;
+        }
+        .form-static-text {
+            padding-top: 0.375rem;
+            padding-bottom: 0.375rem;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    
+    <nav class="navbar fixed-top">
+        <div class="container-fluid">
+            
+            <a class="navbar-brand ms-5" href="#">
+                <img src="{% static 'images/Logo-STEM-White.png' %}" alt="Logo STEM" style="width: auto; height: 50px;">
+            </a>
+            
+            <div class="d-flex align-items-center ms-auto">
+                <button class="navbar-toggler border-0" type="button" 
+                        data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" 
+                        aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                    <i class="bi bi-person-circle" style="font-size: 35px; color: white"></i>
+                </button>
+            </div>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <div class="d-flex align-items-center flex-grow-1">
+                        <i class="bi bi-person-circle me-3" style="font-size: 35px; color: black"></i>
+                        <div class="d-flex flex-column justify-content-center me-auto">
+                            {% if mahasiswa_data %}
+                            <h6 class="offcanvas-title fw-bold mb-0" id="offcanvasNavbarLabel" style="font-size: 15px;">
+                                {{ mahasiswa_data.user.get_full_name|default:mahasiswa_data.user.email }}
+                            </h6>
+                            <span class="text-muted small">NIM: {{ mahasiswa_data.nim }}</span>
+                            {% else %}
+                            <h6 class="offcanvas-title fw-bold mb-0" id="offcanvasNavbarLabel" style="font-size: 12px;">
+                                {{ user_data.email }}
+                            </h6>
+                            <span class="text-muted small">Mahasiswa</span>
+                            {% endif %}
+                        </div>
+                        {% if mahasiswa_data %}
+                            <a href="#" class="text-secondary text-decoration-none hover-underline me-2">See detail</a>
+                        {% endif %}
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body d-flex flex-column">
+                    <div class="flex-grow-1 p-3">
+                        {% if coop_status == 'NOT_REGISTERED' %}<a href="#" class="btn btn-primary w-100 mb-2">Register Co-Op</a>
+                        {% elif coop_status == 'REGISTERED' %}<a href="#" class="btn btn-outline-primary w-100 mb-2">Application Status</a>
+                            <a href="#" class="btn btn-outline-primary w-100 mb-2">Update Internship Status</a>
+                        {% elif coop_status == 'ON_INTERNSHIP' %}<a href="#" class="btn btn-primary w-100 mb-2">Fill Weekly Report</a>
+                            <a href="#" class="btn btn-primary w-100 mb-2">Submit Final Report</a>
+                            <a href="#" class="btn btn-outline-primary w-100 mb-2">Download Co-Op Certificate</a>
+                        {% endif %}
+                    </div>
+                    <div class="w-100 d-flex justify-content-end mb-3">
+                        <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container py-4">
+        
+        <div class="row content-wrapper">
+            
+            <div class="col-1 d-none d-md-block arrow-wrapper">
+                <a href="javascript:history.back()" class="text-dark">
+                    <i class="bi bi-arrow-left" style="font-size: 2rem;"></i>
+                </a>
+            </div>
+
+            <div class="col-12 col-md-11">
+                <div class="form-container bg-white p-4 p-md-5 shadow-sm rounded">
+                    
+                    <a href="javascript:history.back()" class="text-dark d-md-none mb-3 d-inline-block">
+                        <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
+                    </a>
+
+                    <h2 class="fw-bold mb-1">Weekly Co-Op Activity Report</h2>
+                    <p class="text-muted mb-4">Laporan Aktivitas Mingguan</p>
+                    
+                    <hr class="mb-4">
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Perusahaan</label>
+                                <p class="form-static-text border rounded px-3 bg-light">{{ detail_magang.supervisor.perusahaan.nama }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Posisi Magang</label>
+                                <p class="form-static-text border rounded px-3 bg-light">{{ detail_magang.posisi }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_jobdesk" class="form-label">Deskripsi Pekerjaan/Aktivitas Utama Minggu Ini</label>
+                            <textarea class="form-control" id="id_jobdesk" name="jobdesk" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_suasana" class="form-label">Suasana dan Lingkungan Pekerjaan</label>
+                            <textarea class="form-control" id="id_suasana" name="suasana" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_ilmu_berguna" class="form-label">Pengetahuan/Keterampilan Perkuliahan yang Berguna dalam Pekerjaan</label>
+                            <textarea class="form-control" id="id_ilmu_berguna" name="ilmu_berguna" rows="4" required></textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_ilmu_kurang" class="form-label">Pengetahuan/Keterampilan yang Dibutuhkan Perusahaan namun Belum Didapatkan di Perkuliahan</label>
+                            <textarea class="form-control" id="id_ilmu_kurang" name="ilmu_kurang" rows="4" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Submit Weekly Report</button>
+                    </form>
+                    
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

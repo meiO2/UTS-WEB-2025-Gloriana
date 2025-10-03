@@ -1,0 +1,8 @@
+nav{
+    background-color: #ED1B24;
+}
+
+.hover-underline:hover{
+    text-decoration: underline !important;
+    color: black;
+}
